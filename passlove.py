@@ -37,6 +37,7 @@ sep_list = [",", ".", "/", "]", "-", "=", " "]
 #   for cryptographic applications"
 srand = random.SystemRandom()
 
+
 def gen_characters(level, explain=False):
     """Generate passwords containing a sequence of symbols. The symbols consist
     of "readable" characters: digits (excluding 0 and 1), ASCII letters
@@ -141,7 +142,8 @@ def gen_pairs_swap(level, explain=False):
     # 1st pair
     word1 = srand.choice(words_len[srand.randint(4, 6)])
     word2 = srand.choice(words_len[srand.randint(4, 6)])
-    pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0], word2[1:]))
+    pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
+                 word2[1:]))
     if level != 0:
         # 2st pair
         word1 = srand.choice(words_len[srand.randint(4, 6)])
@@ -177,7 +179,7 @@ def gen_words(level, explain=False):
         explain_entropy(symbol_count, symbol_length)
         return
 
-    for x in xrange(0,symbol_length):
+    for x in xrange(0, symbol_length):
         parts.append(srand.choice(words_len[srand.randint(2, 6)]))
     return sep.join(parts)
 gen["words"] = gen_words
@@ -238,6 +240,7 @@ def load_word_lists(dic):
         if letter not in words_let.keys():
             words_let[letter] = list()
         words_let[line[0]].append(line)
+
 
 def word_list_info():
     words_swapped = dict()
