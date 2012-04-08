@@ -119,16 +119,16 @@ def gen_pairs_allit(level, explain=False):
     # 1st pair
     word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
     word2 = srand.sample(words_let[word1[0]], 1)[0]
-    pairs.append("%s.%s" % (word1, word2))
+    pairs.append("%s%s%s" % (word1, sep, word2))
     # 2nd pair
     word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
     word2 = srand.sample(words_let[word1[0]], 1)[0]
-    pairs.append("%s.%s" % (word1, word2))
+    pairs.append("%s%s%s" % (word1, sep, word2))
     if level != 0:
         # 3nd pair
         word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
         word2 = srand.sample(words_let[word1[0]], 1)[0]
-        pairs.append("%s.%s" % (word1, word2))
+        pairs.append("%s%s%s" % (word1, sep, word2))
 
     if explain:
         symbol_count = (len(words_len[3]) + len(words_len[4]) +
@@ -137,7 +137,7 @@ def gen_pairs_allit(level, explain=False):
         explain_entropy(symbol_count, symbol_length)
         return
 
-    return sep.join(pairs)
+    return " ".join(pairs)
 gen["pairs_allit"] = gen_pairs_allit
 
 
