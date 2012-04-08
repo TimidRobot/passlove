@@ -7,6 +7,7 @@ pseudo-random number generator.
 (CSPRNG)."""
 
 # Standard Library
+import itertools
 import math
 import optparse
 import random
@@ -20,12 +21,19 @@ import sys
 # Variables
 debug = 0
 dic = "/usr/share/dict/american-english-huge"
-swapped_lowercase_len_4_to_6 = 195364
+egoist_lowercase_len_3_to_6 = 59356
+swapped_lowercase_len_3_to_6 = 199680
 words_let = dict()
 words_len = dict()
-word_min = 2
+word_min = 3
 word_max = 6
 re_nonalpha = re.compile(r"[^a-z]", re.IGNORECASE)
+egiost = {'e': '3', 'g': '9', 'i': '1', 'o': '0', 's': '5', 't': '7'}
+# determin all "egiost" replacement combinations
+egiost_combos = set()
+for x in xrange(1, len(egiost.keys())):
+    for combination in itertools.combinations(egiost.keys(), x):
+        egiost_combos.add(combination)
 gen = dict()
 # Separators -  do no require shift key, considered injection-safe
 sep_list = [",", ".", "/", "]", "-", "=", " "]
@@ -105,21 +113,21 @@ gen["groups_lower"] = gen_groups_lower
 
 def gen_pairs_allit(level, explain=False):
     """Generates passwords containting short alliterative word pairs in which
-    the words within the pair are separated by a random symbol."""
+    the words within the pair are demarcated by a separator."""
     sep = srand.choice(sep_list)
     pairs = list()
     # 1st pair
-    word1 = srand.choice(words_len[srand.randint(3, 5)])
-    word2 = srand.choice(words_let[word1[0]])
+    word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
+    word2 = srand.sample(words_let[word1[0]], 1)[0]
     pairs.append("%s.%s" % (word1, word2))
     # 2nd pair
-    word1 = srand.choice(words_len[srand.randint(3, 5)])
-    word2 = srand.choice(words_let[word1[0]])
+    word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
+    word2 = srand.sample(words_let[word1[0]], 1)[0]
     pairs.append("%s.%s" % (word1, word2))
     if level != 0:
         # 3nd pair
-        word1 = srand.choice(words_len[srand.randint(3, 5)])
-        word2 = srand.choice(words_let[word1[0]])
+        word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
+        word2 = srand.sample(words_let[word1[0]], 1)[0]
         pairs.append("%s.%s" % (word1, word2))
 
     if explain:
@@ -135,24 +143,24 @@ gen["pairs_allit"] = gen_pairs_allit
 
 def gen_pairs_swap(level, explain=False):
     """Generate passwords consisting of medium length word pairs in which the
-    1st letter has been swapped and the words within the pair are separated
-    by a random symbol."""
+    1st letter has been swapped and the words within the pair are demarcated
+    by a separator."""
     sep = srand.choice(sep_list)
     pairs = list()
     # 1st pair
-    word1 = srand.choice(words_len[srand.randint(4, 6)])
-    word2 = srand.choice(words_len[srand.randint(4, 6)])
+    word1 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
+    word2 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
     pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
                  word2[1:]))
     if level != 0:
         # 2st pair
-        word1 = srand.choice(words_len[srand.randint(4, 6)])
-        word2 = srand.choice(words_len[srand.randint(4, 6)])
+        word1 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
+        word2 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
         pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
                                      word2[1:]))
 
     if explain:
-        symbol_count = swapped_lowercase_len_4_to_6
+        symbol_count = swapped_lowercase_len_3_to_6
         symbol_length = len(pairs) * 2
         explain_entropy(symbol_count, symbol_length)
         return
@@ -162,7 +170,7 @@ gen["pairs_swap"] = gen_pairs_swap
 
 
 def gen_words(level, explain=False):
-    """Generate passwords consisting of words separated by a random symbol."""
+    """Generate passwords consisting of words demarcated by a separator."""
     parts = list()
     sep = srand.choice(sep_list)
     if level == 0:
@@ -173,16 +181,42 @@ def gen_words(level, explain=False):
         symbol_length = 6
 
     if explain:
-        symbol_count = (len(words_len[2]) + len(words_len[3]) +
-                        len(words_len[4]) + len(words_len[5]) +
-                        len(words_len[6]))
+        symbol_count = (len(words_len[3]) + len(words_len[4]) +
+                        len(words_len[5]) + len(words_len[6]))
         explain_entropy(symbol_count, symbol_length)
         return
 
     for x in xrange(0, symbol_length):
-        parts.append(srand.choice(words_len[srand.randint(2, 6)]))
+        parts.append(srand.sample(words_len[srand.randint(3, 6)], 1)[0])
     return sep.join(parts)
 gen["words"] = gen_words
+
+
+def gen_words_egiost(level, explain=False):
+    """Generate passwords consisting of short "egiost" words demarcated by a
+    separator. The "egiost" words have random letter substitions: e->3, g->9,
+    i->1, o->0, s->5, t->7."""
+    parts = list()
+    sep = srand.choice(sep_list)
+    if level == 0:
+        symbol_length = 2
+    elif level == 1:
+        symbol_length = 4
+    else:
+        symbol_length = 5
+
+    if explain:
+        symbol_count = egoist_lowercase_len_3_to_6
+        explain_entropy(symbol_count, symbol_length)
+        return
+
+    for x in xrange(0, symbol_length):
+        word = srand.sample(words_len[srand.randint(3, 6)], 1)[0]
+        for l in srand.sample(egiost_combos, 1)[0]:
+            word = word.replace(l, egiost[l])
+        parts.append(word)
+    return sep.join(parts)
+gen["words_egiost"] = gen_words_egiost
 
 
 def grouped_symbols(symbols, groups, explain=False):
@@ -234,32 +268,48 @@ def load_word_lists(dic):
         if length < word_min or length > word_max or re_nonalpha.search(line):
             continue
         if length not in words_len.keys():
-            words_len[length] = list()
-        words_len[length].append(line)
+            words_len[length] = set()
+        words_len[length].add(line)
         letter = line[0]
         if letter not in words_let.keys():
-            words_let[letter] = list()
-        words_let[line[0]].append(line)
+            words_let[letter] = set()
+        words_let[line[0]].add(line)
 
 
 def word_list_info():
     words_swapped = dict()
+    words_egiost = dict()
     for i in words_len:
-        words_swapped[i] = list()
+        words_swapped[i] = set()
+        words_egiost[i] = set()
         for word in words_len[i]:
             for x in ascii_lowercase:
-                words_swapped[i].append("%s%s" % (x, word[1:]))
-    for i in words_swapped:
-        words_swapped[i] = set(words_swapped[i])
+                words_swapped[i].add("%s%s" % (x, word[1:]))
+            words_egiost[i].add(word)
+            for combo in egiost_combos:
+                word_modified = word
+                for l in combo:
+                    word_modified = word_modified.replace(l, egiost[l])
+                words_egiost[i].add(word_modified)
+
     for i in words_len:
         print "%d character words%s" % (i, ("  %d" % i) * 20)
         print
         print "    %6d words" % len(words_len[i])
-        print ("    %6d unique swapped words (all possible 1st letters "
+        print ("    %6d egiost words (e:3, g:9, i:1, o:0, s:5, t:7 "
+               "[multiplier: %.2f])") % (len(words_egiost[i]),
+               float(len(words_egiost[i])) / float(len(words_len[i])))
+        print ("    %6d swapped words (all possible 1st letters "
                "[multiplier: %.2f])") % (len(words_swapped[i]),
                float(len(words_swapped[i])) / float(len(words_len[i])))
         print
         print
+
+    print "egoist_lowercase_len_3_to_6: %7d" % (len(words_egiost[3]) +
+            len(words_egiost[4]) + len(words_egiost[5]) + len(words_egiost[6]))
+    print "swapped_lowercase_len_3_to_6: %6d" % (len(words_swapped[3]) +
+            len(words_swapped[4]) + len(words_swapped[5]) +
+            len(words_swapped[6]))
 
 
 def parser_setup():
@@ -287,7 +337,7 @@ def main(argv):
     # parse options
     p = parser_setup()
     opts, args = p.parse_args(argv)
-    formula = opts.formula
+    formula = opts.formula.lower()
     level = opts.level
 
     # load word lists
@@ -299,7 +349,15 @@ def main(argv):
         if formula in gen:
             for x in xrange(0, opts.number):
                 print gen[formula](level)
-        elif formula == "help":
+        elif formula == "all":
+            passwords = list()
+            for method in gen.iterkeys():
+                for x in xrange(0, opts.number):
+                    passwords.append(gen[method](level))
+            random.shuffle(passwords)
+            for password in passwords:
+                print password
+        else:
             for method in sorted(gen.iterkeys()):
                 print method
                 print "    %s" % gen[method].__doc__
@@ -309,23 +367,6 @@ def main(argv):
                 print "%s%s" % (" " * 38, gen[method](level))
                 print "%s%s\n" % (" " * 38, gen[method](level))
                 print
-
-#            print "    Examples:
-#            for x in xrange(0, 3):
-#                print " " * 40, gen[method](level)
-##    for l in words_let.keys():
-##        if len(words_let[l]) < 200:
-##            del words_let[l]
-##    for key in words_let.keys():
-##        print key,'\t',len(words_let[key])
-#
-#    count = 0
-#    while (count < opts.number):
-#        if opts.columns:
-#            print "%-40s%-40s\n" % (passGen(srand), passGen(srand), )
-#        else:
-#            print passGen(srand)
-#        count = count + 1
 
 
 if __name__ == "__main__":
