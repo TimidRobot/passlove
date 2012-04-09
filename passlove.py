@@ -27,7 +27,7 @@ words_let = dict()
 words_len = dict()
 word_min = 3
 word_max = 6
-re_nonalpha = re.compile(r"[^a-z]", re.IGNORECASE)
+re_nonalpha = re.compile(r"[^a-z]")
 egiost = {'e': '3', 'g': '9', 'i': '1', 'o': '0', 's': '5', 't': '7'}
 # determin all "egiost" replacement combinations
 egiost_combos = set()
