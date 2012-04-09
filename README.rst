@@ -8,7 +8,7 @@ Good (72 bits of Entropy)
 Attack Method                                Guesses per second    Years to Solve  Years to Crack
 ===========================================  ====================  ==============  ==============
 Distributed.net guesses per second (RC5-72)  1,105,696,629,234.00             135              67
-!ElcomSoft guesses per second (NTLM)             2,800,000,000.00          53,480          26,740
+ElcomSoft guesses per second (NTLM)              2,800,000,000.00          53,480          26,740
 Rate limited to 9 guesses per 3 minutes                      0.05  *over 1 quadrillion*
 ===========================================  ====================  ==============================
 
@@ -21,7 +21,7 @@ Moderate (63 bits of Entropy)
 Attack Method                                Guesses per second    Years to Solve  Years to Crack
 ===========================================  ====================  ==============  ==============
 Distributed.net guesses per second (RC5-72)  1,105,696,629,234.00            0.26            0.13
-!ElcomSoft guesses per second (NTLM)             2,800,000,000.00          104.45           52.22
+ElcomSoft guesses per second (NTLM)              2,800,000,000.00          104.45           52.22
 Rate limited to 9 guesses per 3 minutes                      0.05  *over 2 trillion*
 ===========================================  ====================  ==============================
 
@@ -35,7 +35,7 @@ Attack Method                                Guesses per second    Years to Solv
 ===========================================  ====================  ==============  ==============
 Distributed.net guesses per second (RC5-72)  1,105,696,629,234.00  *less than a second*
 -------------------------------------------  --------------------  ------------------------------
-!ElcomSoft guesses per second (NTLM)             2,800,000,000.00  *less than a second*
+ElcomSoft guesses per second (NTLM)              2,800,000,000.00  *less than a second*
 -------------------------------------------  --------------------  ------------------------------
 Rate limited to 9 guesses per 3 minutes                      0.05             170              85
 ===========================================  ====================  ==============  ==============
@@ -46,20 +46,25 @@ Unfortunately, systems that rate limit guesses (ex. lockout thresholds) are stil
 
 Systems that default to having no lockout threshold:
 
-* Windows Server 2008 R2 and previous `Account Policies <http://technet.microsoft.com/en-us/library/dd349793%28WS.10%29.aspx>`_
+- Windows Server 2008 R2 and previous `Account Policies <http://technet.microsoft.com/en-us/library/dd349793%28WS.10%29.aspx>`_
 
 References (retreived 2012-03-19)
 ---------------------------------
 
-* `Password_strength - Wikipedia <http://technet.microsoft.com/en-us/library/dd349793%28WS.10%29.aspx>`_
-* `A complete suite of ElcomSoft password recovery tools <http://www.elcomsoft.com/eprb.html#gpu>`_
-  * `NTLM - Wikipedia <http://en.wikipedia.org/wiki/NTLM>`_
-* `stats.distributed.net - RC5-72 Overall Project Stats <http://stats.distributed.net/projects.php?project_id=8>`_
-  * 2,425 participants tested 1,105,696,629,234 keys per second
-  * 91,027 total participants since beginning of project
-  * `RC5 - Wikipedia < (retreived 2012-03-19)>`_
-* *On average, an attacker will have to try half the possible passwords before finding the correct one.* (`Password_strength - Wikipedia <http://en.wikipedia.org/wiki/Password_strength>`_ referencing NIST's `Electronic Authentication Guideline (PDF) <http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf>`_ and `Law_of_large_numbers - Wikipedia <http://en.wikipedia.org/wiki/Law_of_large_numbers>`_)
-* `Password_cracking - Wikipedia <http://en.wikipedia.org/wiki/Password_cracking>`_
+- `Password_strength - Wikipedia <http://technet.microsoft.com/en-us/library/dd349793%28WS.10%29.aspx>`_
+- `A complete suite of ElcomSoft password recovery tools <http://www.elcomsoft.com/eprb.html#gpu>`_
+
+ - `NTLM - Wikipedia <http://en.wikipedia.org/wiki/NTLM>`_
+
+- `stats.distributed.net - RC5-72 Overall Project Stats <http://stats.distributed.net/projects.php?project_id=8>`_
+
+ - 2,425 participants tested 1,105,696,629,234 keys per second
+ - 91,027 total participants since beginning of project
+ - `RC5 - Wikipedia <http://en.wikipedia.org/wiki/RC5>`_
+
+- *On average, an attacker will have to try half the possible passwords before finding the correct one.* (`Password_strength - Wikipedia <http://en.wikipedia.org/wiki/Password_strength>`_ referencing NIST's `Electronic Authentication Guideline (PDF) <http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf>`_ and `Law_of_large_numbers - Wikipedia <http://en.wikipedia.org/wiki/Law_of_large_numbers>`_)
+
+- `Password_cracking - Wikipedia <http://en.wikipedia.org/wiki/Password_cracking>`_
 
 License
 =======
