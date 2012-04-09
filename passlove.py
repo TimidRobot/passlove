@@ -21,18 +21,19 @@ import sys
 # Variables
 debug = 0
 dic = "/usr/share/dict/american-english-huge"
-egoist_lowercase_len_3_to_6 = 59356
-swapped_lowercase_len_3_to_6 = 199680
+egoist_3to6 = 59356
+swapped_3to6 = 199680
+pairs_3to4 = 180939
 words_let = dict()
 words_len = dict()
 word_min = 3
 word_max = 6
 re_nonalpha = re.compile(r"[^a-z]")
-egiost = {'e': '3', 'g': '9', 'i': '1', 'o': '0', 's': '5', 't': '7'}
-# determin all "egiost" replacement combinations
+egiost_replace = {'e': '3', 'g': '9', 'i': '1', 'o': '0', 's': '5', 't': '7'}
+# determine all "egiost" replacement combinations
 egiost_combos = set()
-for x in xrange(1, len(egiost.keys())):
-    for combination in itertools.combinations(egiost.keys(), x):
+for x in xrange(1, len(egiost_replace.keys())):
+    for combination in itertools.combinations(egiost_replace.keys(), x):
         egiost_combos.add(combination)
 gen = dict()
 # Separators -  do no require shift key, considered injection-safe
@@ -75,7 +76,8 @@ gen["characters"] = gen_characters
 
 def gen_groups_lownum(level, explain=False):
     """Generates passwords containing groups of symbols demarcated by a
-    separator. The symbols consist of digits and lowercase ASCII letters."""
+    random separator. The symbols consist of digits and lowercase ASCII
+    letters."""
     symbols = "%s%s" % (ascii_lowercase, digits)
     if level == 0:
         groups = [2, 3]
@@ -94,7 +96,7 @@ gen["groups_lownum"] = gen_groups_lownum
 
 def gen_groups_lower(level, explain=False):
     """Generates passwords containing groups of symbols demarcated by a
-    separator. The symbols consist of lowercase ASCI letters."""
+    random separator. The symbols consist of lowercase ASCI letters."""
     symbols = "%s" % (ascii_lowercase)
     if level == 0:
         groups = [3, 3]
@@ -113,27 +115,38 @@ gen["groups_lower"] = gen_groups_lower
 
 def gen_pairs_allit(level, explain=False):
     """Generates passwords containing short alliterative word pairs in which
-    the words within the pair are demarcated by a separator."""
+    the words within the pair are demarcated by a random separator."""
     sep = srand.choice(sep_list)
     pairs = list()
     # 1st pair
-    word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
+    word1 = srand.sample(words_len[srand.randint(3, 4)], 1)[0]
     word2 = srand.sample(words_let[word1[0]], 1)[0]
+    while len(word2) > 4:
+        word2 = srand.sample(words_let[word1[0]], 1)[0]
     pairs.append("%s%s%s" % (word1, sep, word2))
     # 2nd pair
-    word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
+    word1 = srand.sample(words_len[srand.randint(3, 4)], 1)[0]
     word2 = srand.sample(words_let[word1[0]], 1)[0]
-    pairs.append("%s%s%s" % (word1, sep, word2))
-    if level != 0:
-        # 3nd pair
-        word1 = srand.sample(words_len[srand.randint(3, 5)], 1)[0]
+    while len(word2) > 4:
         word2 = srand.sample(words_let[word1[0]], 1)[0]
+    pairs.append("%s%s%s" % (word1, sep, word2))
+    if level > 0:
+        # 3rd pair
+        word1 = srand.sample(words_len[srand.randint(3, 4)], 1)[0]
+        word2 = srand.sample(words_let[word1[0]], 1)[0]
+        while len(word2) > 4:
+            word2 = srand.sample(words_let[word1[0]], 1)[0]
+        pairs.append("%s%s%s" % (word1, sep, word2))
+        # 4th pair
+        word1 = srand.sample(words_len[srand.randint(3, 4)], 1)[0]
+        word2 = srand.sample(words_let[word1[0]], 1)[0]
+        while len(word2) > 4:
+            word2 = srand.sample(words_let[word1[0]], 1)[0]
         pairs.append("%s%s%s" % (word1, sep, word2))
 
     if explain:
-        symbol_count = (len(words_len[3]) + len(words_len[4]) +
-                        len(words_len[5]))
-        symbol_length = len(pairs) * 2
+        symbol_count = pairs_3to4
+        symbol_length = len(pairs)
         explain_entropy(symbol_count, symbol_length)
         return
 
@@ -144,23 +157,23 @@ gen["pairs_allit"] = gen_pairs_allit
 def gen_pairs_swap(level, explain=False):
     """Generate passwords consisting of medium length word pairs in which the
     1st letter has been swapped and the words within the pair are demarcated
-    by a separator."""
+    by a random separator."""
     sep = srand.choice(sep_list)
     pairs = list()
     # 1st pair
-    word1 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
-    word2 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
+    word1 = srand.sample(words_len[srand.randint(3, 6)], 1)[0]
+    word2 = srand.sample(words_len[srand.randint(3, 6)], 1)[0]
     pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
                  word2[1:]))
     if level != 0:
         # 2st pair
-        word1 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
-        word2 = srand.sample(words_len[srand.randint(4, 6)], 1)[0]
+        word1 = srand.sample(words_len[srand.randint(3, 6)], 1)[0]
+        word2 = srand.sample(words_len[srand.randint(3, 6)], 1)[0]
         pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
                                      word2[1:]))
 
     if explain:
-        symbol_count = swapped_lowercase_len_3_to_6
+        symbol_count = swapped_3to6
         symbol_length = len(pairs) * 2
         explain_entropy(symbol_count, symbol_length)
         return
@@ -170,7 +183,8 @@ gen["pairs_swap"] = gen_pairs_swap
 
 
 def gen_words(level, explain=False):
-    """Generate passwords consisting of words demarcated by a separator."""
+    """Generate passwords consisting of words demarcated by a random
+    separator."""
     parts = list()
     sep = srand.choice(sep_list)
     if level == 0:
@@ -193,9 +207,9 @@ gen["words"] = gen_words
 
 
 def gen_words_egiost(level, explain=False):
-    """Generate passwords consisting of short "egiost" words demarcated by a
-    separator. The "egiost" words have random letter substitutions: e->3, g->9,
-    i->1, o->0, s->5, t->7."""
+    """Generate passwords consisting of short 'egiost' words demarcated by a
+    random separator. 'egoist' words consist of all unique combinations of the
+    following substitutions: e to 3, g to 9, i to 1, o to 0, s to 5, t to 7"""
     parts = list()
     sep = srand.choice(sep_list)
     if level == 0:
@@ -206,21 +220,22 @@ def gen_words_egiost(level, explain=False):
         symbol_length = 5
 
     if explain:
-        symbol_count = egoist_lowercase_len_3_to_6
+        symbol_count = egoist_3to6
         explain_entropy(symbol_count, symbol_length)
         return
 
     for x in xrange(0, symbol_length):
         word = srand.sample(words_len[srand.randint(3, 6)], 1)[0]
         for l in srand.sample(egiost_combos, 1)[0]:
-            word = word.replace(l, egiost[l])
+            word = word.replace(l, egiost_replace[l])
         parts.append(word)
     return sep.join(parts)
 gen["words_egiost"] = gen_words_egiost
 
 
 def grouped_symbols(symbols, groups, explain=False):
-    """Generates passwords split into groups separated by a random symbol."""
+    """Generates passwords split into groups demarcated by a random
+    separator."""
     sep = srand.choice(sep_list)
     parts = list()
     srand.shuffle(groups)
@@ -274,6 +289,8 @@ def load_word_list(dic):
         letter = line[0]
         if letter not in words_let.keys():
             words_let[letter] = set()
+        if letter not in words_let.keys():
+            words_let[letter] = set()
         words_let[line[0]].add(line)
 
 
@@ -308,15 +325,17 @@ def word_list_info():
             for combo in egiost_combos:
                 word_modified = word
                 for l in combo:
-                    word_modified = word_modified.replace(l, egiost[l])
+                    word_modified = word_modified.replace(l, egiost_replace[l])
                 words_egiost[i].add(word_modified)
 
     print "Words loaded from: %s" % dic
     print "    Filters:"
     print "        * must only contain letters"
-    print "        * must be at least %d characters long" % word_min
-    print "        * must be at most %d characters long" % word_max
+    print "        * must be at least %d letters long" % word_min
+    print "        * must be at most %d letters long" % word_max
     print
+    print
+    # word information based on length
     print ("'egoist' words consist of all unique combinations of the "
             "following substitutions:")
     print "    e to 3, g to 9, i to 1, o to 0, s to 5, t to 7"
@@ -325,48 +344,78 @@ def word_list_info():
            "first letter has\n    been replaced with every  ascii_lowercase "
            "letter")
     print
-    # word information based on length
     words_3to6 = 0
     egiost_3to6 = 0
     swapped_3to6 = 0
     for i in words_len:
-        words_3to6 += len(words_len[i])
-        egiost_3to6 += len(words_egiost[i])
-        swapped_3to6 += len(words_swapped[i])
+        words = len(words_len[i])
+        egiost = len(words_egiost[i])
+        swapped = len(words_swapped[i])
+        words_3to6 += words
+        egiost_3to6 += egiost
+        swapped_3to6 += swapped
         print "%d %-17s" % (i, "character words"),
-        print "%6d words" % len(words_len[i])
-        print "%26d egiost words (multiplier: %.2f)" % (
-                len(words_egiost[i]),
-                float(len(words_egiost[i])) / float(len(words_len[i])))
-        print "%26d swapped words (multiplier: %.2f)" % (
-                len(words_swapped[i]),
-                float(len(words_swapped[i])) / float(len(words_len[i])))
+        print "%6d words" % words
+        print "%26d egiost words (multiplier: %.2f)" % (egiost,
+                float(egiost) / float(words))
+        print "%26d swapped words (multiplier: %.2f)" % (swapped,
+                float(swapped) / float(words))
         print
     print "%-19s" % "totals",
-    print "%6d words, 3 - 5 characters long" % (
+    print "%6d words, 3 - 5 letters long" % (
             words_3to6 - len(words_len[6]))
-    print "%26d words, 3 - 6 characters long" % words_3to6
-    print "%26d egiost words, 3 - 5 characters long" % (
+    print "%26d words, 3 - 6 letters long" % words_3to6
+    print "%26d egiost words, 3 - 5 letters long" % (
             egiost_3to6 - len(words_egiost[6]))
-    print "%26d egiost words, 3 - 6 characters long" % egiost_3to6
-    print "%26d swapped words, 3 - 5 characters long" % (
+    print "%26d egiost words, 3 - 6 letters long" % egiost_3to6
+    print "%26d swapped words, 3 - 5 letters long" % (
             swapped_3to6 - len(words_swapped[6]))
-    print "%26d swapped words, 3 - 6 characters long" % swapped_3to6
+    print "%26d swapped words, 3 - 6 letters long" % swapped_3to6
     print
+    print
+
     # word information based on 1st letter
     print ("1st letter distribution and binomial coefficient (choose 2)")
-    count_total = 0
-    pairs_total = 0
+    print "    %-26s%-26s%s" % ("3 - 4 letters", "3 - 5 letters",
+                                "3 - 6 letters")
+    count_3to4_total = 0
+    count_3to5_total = 0
+    count_3to6_total = 0
+    pairs_3to4_total = 0
+    pairs_3to5_total = 0
+    pairs_3to6_total = 0
     for x in words_let:
-        count = len(words_let[x])
-        count_total += count
-        pairs = binomial_coeff(count, 2)
-        pairs_total += pairs
-        print "%5s:%5d%10s%8d" % (x, count, "pairs:", pairs)
+        count_3to4 = 0
+        count_3to5 = 0
+        for word in words_let[x]:
+            if len(word) < 5:
+                count_3to4 += 1
+            if len(word) < 6:
+                count_3to5 += 1
+        count_3to6 = len(words_let[x])
+        pairs_3to4 = binomial_coeff(count_3to4, 2)
+        pairs_3to5 = binomial_coeff(count_3to5, 2)
+        pairs_3to6 = binomial_coeff(count_3to6, 2)
+        count_3to4_total += count_3to4
+        count_3to5_total += count_3to5
+        count_3to6_total += count_3to6
+        pairs_3to4_total += pairs_3to4
+        pairs_3to5_total += pairs_3to5
+        pairs_3to6_total += pairs_3to6
+        print "%5s:%5d%8d%6s%5s:%4d%10d%6s%5s:%5d%10d%6s" % (
+                x, count_3to4, pairs_3to4, "pairs",
+                x, count_3to5, pairs_3to5, "pairs",
+                x, count_3to6, pairs_3to6, "pairs")
     print "averages"
-    print "%11d%18d" % ((count_total / 26), (pairs_total / 26))
+    print "%10d%9d%6s%10d%10d%6s%11d%10d%6s" % (
+            (count_3to4_total / 26), (pairs_3to4_total / 26), "pairs",
+            (count_3to5_total / 26), (pairs_3to5_total / 26), "pairs",
+            (count_3to6_total / 26), (pairs_3to6_total / 26), "pairs")
     print "totals"
-    print "%11d%18d" % (count_total, pairs_total)
+    print "%10d%9d%6s%10d%10d%6s%11d%10d%6s" % (
+            count_3to4_total, pairs_3to4_total, "pairs",
+            count_3to5_total, pairs_3to5_total, "pairs",
+            count_3to6_total, pairs_3to6_total, "pairs")
 
 
 def parser_setup():
@@ -374,7 +423,7 @@ def parser_setup():
     p = optparse.OptionParser(usage=__doc__)
     p.add_option("-n", "--number", type="int", default=1,
                  help="number of passwords to generate")
-    p.add_option("--word-list-info", action="store_true",
+    p.add_option("-w", "--word-list-info", action="store_true",
                  help="display information about word list")
     p.add_option("-l", "--level", type="int", default=2,
                  help="security level: 2 (good), 1 (moderate), or 0 (weak)")
@@ -420,9 +469,11 @@ def main(argv):
                 print "    %s" % gen[method].__doc__
                 print
                 gen[method](level, True)
-                print "\n%36s  %s" % ("Examples:", gen[method](level))
-                print "%s%s" % (" " * 38, gen[method](level))
-                print "%s%s\n" % (" " * 38, gen[method](level))
+                print
+                print "    %s  %s" % ("Examples:", gen[method](level))
+                print "%s%s" % (" " * 15, gen[method](level))
+                print "%s%s" % (" " * 15, gen[method](level))
+                print
                 print
 
 
