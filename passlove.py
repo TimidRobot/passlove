@@ -259,7 +259,8 @@ def explain_entropy(symbol_count, symbol_length, separator=True):
     print "    Password entropy: %7.2f bits" % password_entropy
 
 
-def load_word_lists(dic):
+def load_word_list(dic):
+    """Load word list"""
     # Load word lists
     for line in open(dic, "r").readlines():
         line = line.lower()
@@ -277,6 +278,24 @@ def load_word_lists(dic):
 
 
 def word_list_info():
+    """Display information based on loaded word list."""
+
+    def binomial_coeff(n, k):
+        """calculate C(n, k) - the binomial coeeficient
+        >>> binomial_coeff(3, 2)
+        3
+        >>> binomial_coeff(9,4)
+        126
+        >>> binomial_coeff(9,6)
+        84
+        >>> binomial_coeff(20,14)
+        38760
+        """
+        result = 1
+        for i in range(1, k + 1):
+            result = result * (n - i + 1) / i
+        return result
+
     words_swapped = dict()
     words_egiost = dict()
     for i in words_len:
@@ -292,24 +311,63 @@ def word_list_info():
                     word_modified = word_modified.replace(l, egiost[l])
                 words_egiost[i].add(word_modified)
 
+    print "Words loaded from: %s" % dic
+    print "    Filters:"
+    print "        * must only contain letters"
+    print "        * must be at least %d characters long" % word_min
+    print "        * must be at most %d characters long" % word_max
+    print
+    print ("'egoist' words consist of all unique combinations of the "
+            "following substitions:")
+    print "    e to 3, g to 9, i to 1, o to 0, s to 5, t to 7"
+    print
+    print ("'swapped' words consist of all unique combinations in which the "
+           "first letter has\n    been replaced with every ascii_lowercase "
+           "letter")
+    print
+    # word information based on length
+    words_3to6 = 0
+    egiost_3to6 = 0
+    swapped_3to6 = 0
     for i in words_len:
-        print "%d character words%s" % (i, ("  %d" % i) * 20)
+        words_3to6 += len(words_len[i])
+        egiost_3to6 += len(words_egiost[i])
+        swapped_3to6 += len(words_swapped[i])
+        print "%d %-17s" % (i, "character words"),
+        print "%6d words" % len(words_len[i])
+        print "%26d egiost words (multiplier: %.2f)" % (
+                len(words_egiost[i]),
+                float(len(words_egiost[i])) / float(len(words_len[i])))
+        print "%26d swapped words (multiplier: %.2f)" % (
+                len(words_swapped[i]),
+                float(len(words_swapped[i])) / float(len(words_len[i])))
         print
-        print "    %6d words" % len(words_len[i])
-        print ("    %6d egiost words (e:3, g:9, i:1, o:0, s:5, t:7 "
-               "[multiplier: %.2f])") % (len(words_egiost[i]),
-               float(len(words_egiost[i])) / float(len(words_len[i])))
-        print ("    %6d swapped words (all possible 1st letters "
-               "[multiplier: %.2f])") % (len(words_swapped[i]),
-               float(len(words_swapped[i])) / float(len(words_len[i])))
-        print
-        print
-
-    print "egoist_lowercase_len_3_to_6: %7d" % (len(words_egiost[3]) +
-            len(words_egiost[4]) + len(words_egiost[5]) + len(words_egiost[6]))
-    print "swapped_lowercase_len_3_to_6: %6d" % (len(words_swapped[3]) +
-            len(words_swapped[4]) + len(words_swapped[5]) +
-            len(words_swapped[6]))
+    print "%-19s" % "totals",
+    print "%6d words, 3 - 5 characters long" % (
+            words_3to6 - len(words_len[6]))
+    print "%26d words, 3 - 6 characters long" % words_3to6
+    print "%26d egiost words, 3 - 5 characters long" % (
+            egiost_3to6 - len(words_egiost[6]))
+    print "%26d egiost words, 3 - 6 characters long" % egiost_3to6
+    print "%26d swapped words, 3 - 5 characters long" % (
+            swapped_3to6 - len(words_swapped[6]))
+    print "%26d swapped words, 3 - 6 characters long" % swapped_3to6
+    print
+    # word information based on 1st letter
+    print ("1st letter distribution (pair combinations determined by binomial "
+           "coeeficient)")
+    count_total = 0
+    pairs_total = 0
+    for x in words_let:
+        count = len(words_let[x])
+        count_total += count
+        pairs = binomial_coeff(count, 2)
+        pairs_total += pairs
+        print "%5s:%5d    pair combinations: %7d" % (x, count, pairs)
+    print "averages"
+    print "%11d%30d" % ((count_total / 26), (pairs_total / 26))
+    print "totals"
+    print "%11d%30d" % (count_total, pairs_total)
 
 
 def parser_setup():
@@ -341,7 +399,7 @@ def main(argv):
     level = opts.level
 
     # load word lists
-    load_word_lists(dic)
+    load_word_list(dic)
 
     if opts.word_list_info:
         word_list_info()
