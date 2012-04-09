@@ -112,7 +112,7 @@ gen["groups_lower"] = gen_groups_lower
 
 
 def gen_pairs_allit(level, explain=False):
-    """Generates passwords containting short alliterative word pairs in which
+    """Generates passwords containing short alliterative word pairs in which
     the words within the pair are demarcated by a separator."""
     sep = srand.choice(sep_list)
     pairs = list()
@@ -194,7 +194,7 @@ gen["words"] = gen_words
 
 def gen_words_egiost(level, explain=False):
     """Generate passwords consisting of short "egiost" words demarcated by a
-    separator. The "egiost" words have random letter substitions: e->3, g->9,
+    separator. The "egiost" words have random letter substitutions: e->3, g->9,
     i->1, o->0, s->5, t->7."""
     parts = list()
     sep = srand.choice(sep_list)
@@ -281,7 +281,7 @@ def word_list_info():
     """Display information based on loaded word list."""
 
     def binomial_coeff(n, k):
-        """calculate C(n, k) - the binomial coeeficient
+        """calculate C(n, k) - the binomial coefficient
         >>> binomial_coeff(3, 2)
         3
         >>> binomial_coeff(9,4)
@@ -318,11 +318,11 @@ def word_list_info():
     print "        * must be at most %d characters long" % word_max
     print
     print ("'egoist' words consist of all unique combinations of the "
-            "following substitions:")
+            "following substitutions:")
     print "    e to 3, g to 9, i to 1, o to 0, s to 5, t to 7"
     print
     print ("'swapped' words consist of all unique combinations in which the "
-           "first letter has\n    been replaced with every ascii_lowercase "
+           "first letter has\n    been replaced with every  ascii_lowercase "
            "letter")
     print
     # word information based on length
@@ -354,8 +354,7 @@ def word_list_info():
     print "%26d swapped words, 3 - 6 characters long" % swapped_3to6
     print
     # word information based on 1st letter
-    print ("1st letter distribution (pair combinations determined by binomial "
-           "coeeficient)")
+    print ("1st letter distribution and binomial coefficient (choose 2)")
     count_total = 0
     pairs_total = 0
     for x in words_let:
@@ -363,11 +362,11 @@ def word_list_info():
         count_total += count
         pairs = binomial_coeff(count, 2)
         pairs_total += pairs
-        print "%5s:%5d    pair combinations: %7d" % (x, count, pairs)
+        print "%5s:%5d%10s%8d" % (x, count, "pairs:", pairs)
     print "averages"
-    print "%11d%30d" % ((count_total / 26), (pairs_total / 26))
+    print "%11d%18d" % ((count_total / 26), (pairs_total / 26))
     print "totals"
-    print "%11d%30d" % (count_total, pairs_total)
+    print "%11d%18d" % (count_total, pairs_total)
 
 
 def parser_setup():
