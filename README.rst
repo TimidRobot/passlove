@@ -1,3 +1,11 @@
+Depends
+=======
+- Word list or dictionary
+
+  - If no word list is provided on the command line, it defaults to using ``/usr/share/dict/american-english-huge``, which is distributed by the Debian or Ubuntu ``wamerican-huge`` package. If you're not using either and your system doesn't have an alternative, it's probably easiest to extract the file from the dpkg.
+  - `Ubuntu -- Details of package wamerican-huge in precise <http://packages.ubuntu.com/precise/wamerican-huge>`_
+  - `Kevin's Word List Page <http://wordlist.sourceforge.net/>`_ (``wamerican-huge`` is based on SCOWL)
+
 Password Strength
 =================
 
@@ -48,7 +56,7 @@ Systems that default to having no lockout threshold:
 
 - Windows Server 2008 R2 and previous `Account Policies <http://technet.microsoft.com/en-us/library/dd349793%28WS.10%29.aspx>`_
 
-References (retreived 2012-03-19)
+References (retrieved 2012-03-19)
 ---------------------------------
 
 - `Password_strength - Wikipedia <http://technet.microsoft.com/en-us/library/dd349793%28WS.10%29.aspx>`_

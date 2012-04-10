@@ -423,6 +423,8 @@ def parser_setup():
     p = optparse.OptionParser(usage=__doc__)
     p.add_option("-n", "--number", type="int", default=1,
                  help="number of passwords to generate")
+    p.add_option("--word-list-file", dest="dic",
+                 default=dic, help="Word list file or dictionary")
     p.add_option("-w", "--word-list-info", action="store_true",
                  help="display information about word list")
     p.add_option("-l", "--level", type="int", default=2,
@@ -445,6 +447,7 @@ def main(argv):
     opts, args = p.parse_args(argv)
     formula = opts.formula.lower()
     level = opts.level
+    dic = opts.dic
 
     # load word lists
     load_word_list(dic)
