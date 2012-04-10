@@ -6,6 +6,10 @@ Depends
   - `Ubuntu -- Details of package wamerican-huge in precise <http://packages.ubuntu.com/precise/wamerican-huge>`_
   - `Kevin's Word List Page <http://wordlist.sourceforge.net/>`_ (wamerican-huge is based on SCOWL)
 
+Help Examples
+=============
+See the `passlove Wiki <https://github.com/ClockworkNet/passlove/wiki>`_.
+
 Password Strength
 =================
 
