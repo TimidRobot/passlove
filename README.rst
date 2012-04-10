@@ -2,9 +2,9 @@ Depends
 =======
 - Word list or dictionary
 
-  - If no word list is provided on the command line, it defaults to using ``/usr/share/dict/american-english-huge``, which is distributed by the Debian or Ubuntu ``wamerican-huge`` package. If you're not using either and your system doesn't have an alternative, it's probably easiest to extract the file from the dpkg.
+  - If no word list is provided on the command line, it defaults to using ``/usr/share/dict/american-english-huge``, which is distributed by the Debian or Ubuntu wamerican-huge package. If you're not using either and your system doesn't have an alternative, it's probably easiest to extract the file from the dpkg.
   - `Ubuntu -- Details of package wamerican-huge in precise <http://packages.ubuntu.com/precise/wamerican-huge>`_
-  - `Kevin's Word List Page <http://wordlist.sourceforge.net/>`_ (``wamerican-huge`` is based on SCOWL)
+  - `Kevin's Word List Page <http://wordlist.sourceforge.net/>`_ (wamerican-huge is based on SCOWL)
 
 Password Strength
 =================
@@ -79,7 +79,7 @@ License
 
 passlove is licensed under the `BSD 2-Clause License <http://www.opensource.org/licenses/BSD-2-Clause>`_
 
-    Copyright (c) 2011, Clockwork Active Media Systems
+    Copyright (c) 2012, Clockwork Active Media Systems
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
