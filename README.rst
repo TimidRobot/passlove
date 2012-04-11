@@ -56,7 +56,7 @@ Weak passwords are only viable if they are **never** used on multiple systems an
 
 Unfortunately, systems that rate limit guesses (ex. lockout thresholds) are still rare. Additionally, even systems with lockout thresholds are often compromised, making the passwords hashes available.
 
-Systems that default to having no lockout threshold:
+Systems that default to having **no** lockout threshold:
 
 - Windows Server 2008 R2 and previous `Account Policies <http://technet.microsoft.com/en-us/library/dd349793%28WS.10%29.aspx>`_
 
