@@ -1,10 +1,7 @@
-Depends
-=======
-- Word list or dictionary
+Word List
+=========
 
-  - If no word list is provided on the command line, it defaults to using ``/usr/share/dict/american-english-huge``, which is distributed by the Debian or Ubuntu wamerican-huge package. If you're not using either and your system doesn't have an alternative, it's probably easiest to extract the file from the dpkg.
-  - `Ubuntu -- Details of package wamerican-huge in precise <http://packages.ubuntu.com/precise/wamerican-huge>`_
-  - `Kevin's Word List Page <http://wordlist.sourceforge.net/>`_ (wamerican-huge is based on SCOWL)
+The bundled word list (``words.pkl``) uses data from the Part Of Speech Database from `Kevin's Word List Page <http://wordlist.sourceforge.net/>`_.
 
 Help Examples
 =============
@@ -81,6 +78,9 @@ References (retrieved 2012-03-19)
 License
 =======
 
+passlove
+--------
+
 passlove is licensed under the `BSD 2-Clause License <http://www.opensource.org/licenses/BSD-2-Clause>`_
 
     Copyright (c) 2012, Clockwork Active Media Systems
@@ -106,3 +106,61 @@ passlove is licensed under the `BSD 2-Clause License <http://www.opensource.org/
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
+
+Part of Speach Database - Moby database
+---------------------------------------
+
+The Moby database was explicitly pleased in the public domain:
+
+    The Moby lexicon project is complete and has
+    been place into the public domain. Use, sell,
+    rework, excerpt and use in any way on any platform.
+
+    Placing this material on internal or public servers is
+    also encouraged. The compiler is not aware of any
+    export restrictions so freely distribute world-wide.
+
+    You can verify the public domain status by contacting
+
+    Grady Ward
+    3449 Martha Ct.
+    Arcata, CA  95521-4884
+
+    grady@netcom.com
+    grady@northcoast.com
+
+
+Part of Speach Database - WordNet database
+------------------------------------------
+
+The WordNet database is under the following Copyright:
+
+    This software and database is being provided to you, the LICENSEE, by
+    Princeton University under the following license.  By obtaining, using
+    and/or copying this software and database, you agree that you have
+    read, understood, and will comply with these terms and conditions.:
+
+    Permission to use, copy, modify and distribute this software and
+    database and its documentation for any purpose and without fee or
+    royalty is hereby granted, provided that you agree to comply with
+    the following copyright notice and statements, including the disclaimer,
+    and that the same appear on ALL copies of the software, database and
+    documentation, including modifications that you make for internal
+    use or for distribution.
+
+    WordNet 1.6 Copyright 1997 by Princeton University.  All rights reserved.
+
+    THIS SOFTWARE AND DATABASE IS PROVIDED "AS IS" AND PRINCETON
+    UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+    IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON
+    UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT-
+    ABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE
+    OF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT
+    INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR
+    OTHER RIGHTS.
+
+    The name of Princeton University or Princeton may not be used in
+    advertising or publicity pertaining to distribution of the software
+    and/or database.  Title to copyright in this software, database and
+    any associated documentation shall at all times remain with
+    Princeton University and LICENSEE agrees to preserve same.
