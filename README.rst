@@ -112,22 +112,21 @@ Part of Speach Database - Moby database
 
 The Moby database was explicitly pleased in the public domain:
 
-    The Moby lexicon project is complete and has
-    been place into the public domain. Use, sell,
-    rework, excerpt and use in any way on any platform.
+    The Moby lexicon project is complete and has been place into the public
+    domain. Use, sell, rework, excerpt and use in any way on any platform.
 
-    Placing this material on internal or public servers is
-    also encouraged. The compiler is not aware of any
-    export restrictions so freely distribute world-wide.
+    Placing this material on internal or public servers is also encouraged. The
+    compiler is not aware of any export restrictions so freely distribute
+    world-wide.
 
     You can verify the public domain status by contacting
 
-    Grady Ward
-    3449 Martha Ct.
-    Arcata, CA  95521-4884
+    | Grady Ward
+    | 3449 Martha Ct.
+    | Arcata, CA  95521-4884
 
-    grady@netcom.com
-    grady@northcoast.com
+    | grady@netcom.com
+    | grady@northcoast.com
 
 
 Part of Speach Database - WordNet database
@@ -137,30 +136,27 @@ The WordNet database is under the following Copyright:
 
     This software and database is being provided to you, the LICENSEE, by
     Princeton University under the following license.  By obtaining, using
-    and/or copying this software and database, you agree that you have
-    read, understood, and will comply with these terms and conditions.:
+    and/or copying this software and database, you agree that you have read,
+    understood, and will comply with these terms and conditions.:
 
-    Permission to use, copy, modify and distribute this software and
-    database and its documentation for any purpose and without fee or
-    royalty is hereby granted, provided that you agree to comply with
-    the following copyright notice and statements, including the disclaimer,
-    and that the same appear on ALL copies of the software, database and
-    documentation, including modifications that you make for internal
-    use or for distribution.
+    Permission to use, copy, modify and distribute this software and database
+    and its documentation for any purpose and without fee or royalty is hereby
+    granted, provided that you agree to comply with the following copyright
+    notice and statements, including the disclaimer, and that the same appear
+    on ALL copies of the software, database and documentation, including
+    modifications that you make for internal use or for distribution.
 
     WordNet 1.6 Copyright 1997 by Princeton University.  All rights reserved.
 
-    THIS SOFTWARE AND DATABASE IS PROVIDED "AS IS" AND PRINCETON
-    UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
-    IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON
-    UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT-
-    ABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE
-    OF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT
-    INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR
-    OTHER RIGHTS.
+    THIS SOFTWARE AND DATABASE IS PROVIDED "AS IS" AND PRINCETON UNIVERSITY
+    MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED. BY WAY OF
+    EXAMPLE, BUT NOT LIMITATION, PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS
+    OR WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR
+    THAT THE USE OF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT
+    INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
 
     The name of Princeton University or Princeton may not be used in
-    advertising or publicity pertaining to distribution of the software
-    and/or database.  Title to copyright in this software, database and
-    any associated documentation shall at all times remain with
-    Princeton University and LICENSEE agrees to preserve same.
+    advertising or publicity pertaining to distribution of the software and/or
+    database.  Title to copyright in this software, database and any associated
+    documentation shall at all times remain with Princeton University and
+    LICENSEE agrees to preserve same.
