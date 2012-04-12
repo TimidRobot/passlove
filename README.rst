@@ -81,7 +81,7 @@ License
 passlove
 --------
 
-passlove is licensed under the `BSD 2-Clause License <http://www.opensource.org/licenses/BSD-2-Clause>`_
+passlove is licensed under the `BSD 2-Clause License <http://www.opensource.org/licenses/BSD-2-Clause>`_: ::
 
     Copyright (c) 2012, Clockwork Active Media Systems
     All rights reserved.
@@ -110,7 +110,7 @@ passlove is licensed under the `BSD 2-Clause License <http://www.opensource.org/
 Part of Speach Database - Moby database
 ---------------------------------------
 
-The Moby database was explicitly pleased in the public domain:
+The Moby database was explicitly pleased in the public domain: ::
 
     The Moby lexicon project is complete and has been place into the public
     domain. Use, sell, rework, excerpt and use in any way on any platform.
@@ -121,18 +121,18 @@ The Moby database was explicitly pleased in the public domain:
 
     You can verify the public domain status by contacting
 
-    | Grady Ward
-    | 3449 Martha Ct.
-    | Arcata, CA  95521-4884
+    Grady Ward
+    3449 Martha Ct.
+    Arcata, CA  95521-4884
 
-    | grady@netcom.com
-    | grady@northcoast.com
+    grady@netcom.com
+    grady@northcoast.com
 
 
 Part of Speach Database - WordNet database
 ------------------------------------------
 
-The WordNet database is under the following Copyright:
+The WordNet database is under the following Copyright: ::
 
     This software and database is being provided to you, the LICENSEE, by
     Princeton University under the following license.  By obtaining, using
