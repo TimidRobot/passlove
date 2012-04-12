@@ -3,8 +3,7 @@
 """Usage: passlove [options]
 
 Generates a passwords using an OS specific cryptographically secure
-pseudo-random number generator.
-(CSPRNG)."""
+pseudo-random number generator (CSPRNG)."""
 
 # Standard Library
 import itertools
@@ -24,17 +23,30 @@ import sys
 words_file = "words.pkl"
 word_min = 2
 word_max = 6
-names = ("short", "medium", "long", "total")
-ranges = {"short": (2, 3), "medium": (3, 5), "long": (4, 6),
-          "total": (word_min, word_max)}
-words = dict()
-egoist_3to6 = 59356
-swapped_3to6 = 199680
-pairs_3to4 = 180939
+names = ("short", "medium", "long")
+ranges = {names[0]: (word_min, 3), names[1]: (word_min, 5),
+          names[2]: (word_min, word_max)}
+
+words = {"len": dict(),  # length: common words
+         "let": dict(),  # 1st letter: common words
+         "pos": dict(),  # part of speach: common words
+         "num_ranges": {"common": dict(),    # ranges: number of words
+                        "egiost": dict(),    # ranges: number of words
+                        "pairs": dict(),     # ranges: number of words
+                        "swapped": dict()},  # ranges: number of words
+         "num_common": dict(),   # length: number of words
+         "num_egiost": dict(),   # length: number of words
+         "num_swapped": dict()}  # length: number of words
+for name in names:
+    words["num_ranges"]["common"][name] = 0
+    words["num_ranges"]["egiost"][name] = 0
+    words["num_ranges"]["pairs"][name] = 0
+    words["num_ranges"]["swapped"][name] = 0
+
 pos_desc = {"!": "Interjection", "A": "Adjective", "C": "Conjunction",
-            "D": "Definite Article", "N": "Noun", "P": "Plural",
+            "D": "Definite Article", "N": "Noun", "p": "Plural",
             "V": "Verb (usu participle)", "h": "Noun Phrase",
-            "i": "Verb (intransitive)", "p": "Preposition", "r": "Pronoun",
+            "i": "Verb (intransitive)", "P": "Preposition", "r": "Pronoun",
             "t": "Verb (transitive)", "v": "Adverb"}
 re_nonalpha = re.compile(r"[^a-z]")
 re_vowels = re.compile(r"[aeiouy]", re.IGNORECASE)
@@ -71,16 +83,18 @@ def gen_characters(level, explain=False):
         length = 10
     else:
         length = 12
-
     if explain:
+        # explain entropy
         symbol_count = len(readable)
         symbol_length = length
         explain_entropy(symbol_count, symbol_length, False)
-        return
-
-    for x in xrange(0, length):
-        parts.append(srand.choice(readable))
-    return "".join(parts)
+        password = None
+    else:
+        # generate password
+        for x in xrange(0, length):
+            parts.append(srand.choice(readable))
+        password = "".join(parts)
+    return password
 gen["characters"] = gen_characters
 
 
@@ -95,12 +109,14 @@ def gen_groups_lownum(level, explain=False):
         groups = [4, 4, 4]
     else:
         groups = [5, 5, 4]
-
     if explain:
+        # explain entropy
         grouped_symbols(symbols, groups, True)
-        return
-
-    return grouped_symbols(symbols, groups)
+        password = None
+    else:
+        # generate password
+        password = grouped_symbols(symbols, groups)
+    return password
 gen["groups_lownum"] = gen_groups_lownum
 
 
@@ -114,53 +130,44 @@ def gen_groups_lower(level, explain=False):
         groups = [5, 4, 4]
     else:
         groups = [5, 5, 5]
-
     if explain:
+        # explain entropy
         grouped_symbols(symbols, groups, True)
-        return
-
-    return grouped_symbols(symbols, groups)
+        password = None
+    else:
+        # generate password
+        password = grouped_symbols(symbols, groups)
+    return password
 gen["groups_lower"] = gen_groups_lower
 
 
 def gen_pairs_allit(level, explain=False):
     """Generates passwords containing short alliterative word pairs in which
     the words within the pair are demarcated by a random separator."""
-    sep = srand.choice(sep_list)
     pairs = list()
-    # 1st pair
-    word1 = srand.sample(words["len"][srand.randint(3, 4)], 1)[0]
-    word2 = srand.sample(words["let"][word1[0]], 1)[0]
-    while len(word2) > 4:
-        word2 = srand.sample(words["let"][word1[0]], 1)[0]
-    pairs.append("%s%s%s" % (word1, sep, word2))
-    # 2nd pair
-    word1 = srand.sample(words["len"][srand.randint(3, 4)], 1)[0]
-    word2 = srand.sample(words["let"][word1[0]], 1)[0]
-    while len(word2) > 4:
-        word2 = srand.sample(words["let"][word1[0]], 1)[0]
-    pairs.append("%s%s%s" % (word1, sep, word2))
-    if level > 0:
-        # 3rd pair
-        word1 = srand.sample(words["len"][srand.randint(3, 4)], 1)[0]
-        word2 = srand.sample(words["let"][word1[0]], 1)[0]
-        while len(word2) > 4:
-            word2 = srand.sample(words["let"][word1[0]], 1)[0]
-        pairs.append("%s%s%s" % (word1, sep, word2))
-        # 4th pair
-        word1 = srand.sample(words["len"][srand.randint(3, 4)], 1)[0]
-        word2 = srand.sample(words["let"][word1[0]], 1)[0]
-        while len(word2) > 4:
-            word2 = srand.sample(words["let"][word1[0]], 1)[0]
-        pairs.append("%s%s%s" % (word1, sep, word2))
-
+    sep = srand.choice(sep_list)
+    length = "long"
+    r1, r2 = ranges[length]
+    if level == 0:
+        pair_count = 2
+    else:
+        pair_count = 3
     if explain:
-        symbol_count = pairs_3to4
-        symbol_length = len(pairs)
+        # explain entropy
+        symbol_count = words["num_ranges"]["pairs"][length]
+        symbol_length = pair_count
         explain_entropy(symbol_count, symbol_length)
-        return
-
-    return " ".join(pairs)
+        password = None
+    else:
+        # generate password
+        for x in xrange(0, pair_count):
+            word1 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
+            word2 = srand.sample(words["let"][word1[0]], 1)[0]
+            while len(word2) > 4:
+                word2 = srand.sample(words["let"][word1[0]], 1)[0]
+            pairs.append("%s%s%s" % (word1, sep, word2))
+        password = " ".join(pairs)
+    return password
 gen["pairs_allit"] = gen_pairs_allit
 
 
@@ -168,30 +175,29 @@ def gen_pairs_swap(level, explain=False):
     """Generate passwords consisting of medium length word pairs in which the
     1st letter has been swapped and the words within the pair are demarcated
     by a random separator."""
-    sep = srand.choice(sep_list)
     pairs = list()
-    length = "long"
+    sep = srand.choice(sep_list)
+    length = "medium"
     r1, r2 = ranges[length]
-
-    # 1st pair
-    word1 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
-    word2 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
-    pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
-                 word2[1:]))
-    if level != 0:
-        # 2st pair
-        word1 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
-        word2 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
-        pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
-                                     word2[1:]))
-
+    if level == 0:
+        pair_count = 1
+    else:
+        pair_count = 2
     if explain:
-        symbol_count = swapped_3to6
-        symbol_length = len(pairs) * 2
+        # explain entropy
+        symbol_count = words["num_ranges"]["swapped"][length]
+        symbol_length = pair_count * 2
         explain_entropy(symbol_count, symbol_length)
-        return
-
-    return " ".join(pairs)
+        password = None
+    else:
+        # generate password
+        for x in xrange(0, pair_count):
+            word1 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
+            word2 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
+            pairs.append("%s%s%s%s%s" % (word2[0], word1[1:], sep, word1[0],
+                         word2[1:]))
+        password = " ".join(pairs)
+    return password
 gen["pairs_swap"] = gen_pairs_swap
 
 
@@ -200,22 +206,26 @@ def gen_words(level, explain=False):
     separator."""
     parts = list()
     sep = srand.choice(sep_list)
+    length = "long"
+    r1, r2 = ranges[length]
     if level == 0:
         symbol_length = 2
     elif level == 1:
         symbol_length = 5
     else:
-        symbol_length = 6
-
+        symbol_length = 5
     if explain:
-        symbol_count = (len(words["len"][3]) + len(words["len"][4]) +
-                        len(words["len"][5]) + len(words["len"][6]))
+        # explain entropy
+        symbol_count = words["num_ranges"]["common"][length]
         explain_entropy(symbol_count, symbol_length)
-        return
-
-    for x in xrange(0, symbol_length):
-        parts.append(srand.sample(words["len"][srand.randint(3, 6)], 1)[0])
-    return sep.join(parts)
+        password = None
+    else:
+        # generate password
+        for x in xrange(0, symbol_length):
+            parts.append(
+                    srand.sample(words["len"][srand.randint(r1, r2)], 1)[0])
+        password = sep.join(parts)
+    return password
 gen["words"] = gen_words
 
 
@@ -225,24 +235,28 @@ def gen_words_egiost(level, explain=False):
     following substitutions: e to 3, g to 9, i to 1, o to 0, s to 5, t to 7"""
     parts = list()
     sep = srand.choice(sep_list)
+    length = "medium"
+    r1, r2 = ranges[length]
     if level == 0:
         symbol_length = 2
     elif level == 1:
         symbol_length = 4
     else:
         symbol_length = 5
-
     if explain:
-        symbol_count = egoist_3to6
+        # explain entropy
+        symbol_count = words["num_ranges"]["egiost"][length]
         explain_entropy(symbol_count, symbol_length)
-        return
-
-    for x in xrange(0, symbol_length):
-        word = srand.sample(words["len"][srand.randint(3, 6)], 1)[0]
-        for l in srand.sample(egiost_combos, 1)[0]:
-            word = word.replace(l, egiost_replace[l])
-        parts.append(word)
-    return sep.join(parts)
+        password = None
+    else:
+        # generate password
+        for x in xrange(0, symbol_length):
+            word = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
+            for l in srand.sample(egiost_combos, 1)[0]:
+                word = word.replace(l, egiost_replace[l])
+            parts.append(word)
+        password = sep.join(parts)
+    return password
 gen["words_egiost"] = gen_words_egiost
 
 
@@ -252,21 +266,24 @@ def grouped_symbols(symbols, groups, explain=False):
     sep = srand.choice(sep_list)
     parts = list()
     srand.shuffle(groups)
-    for length in groups:
-        chunk = list()
-        for y in xrange(0, length):
-            chunk.append(srand.choice(symbols))
-        parts.append("".join(chunk))
-
     if explain:
+        # explain entropy
         symbol_count = len(symbols)
         symbol_length = 0
         for i in groups:
             symbol_length = symbol_length + i
         explain_entropy(symbol_count, symbol_length)
         return
-
-    return sep.join(parts)
+        password = None
+    else:
+        # generate password
+        for length in groups:
+            chunk = list()
+            for y in xrange(0, length):
+                chunk.append(srand.choice(symbols))
+            parts.append("".join(chunk))
+        password = sep.join(parts)
+    return password
 
 
 def explain_entropy(symbol_count, symbol_length, separator=True):
@@ -298,18 +315,24 @@ def load_words_file(words_file):
 def create_words_file(source_file, words_file):
     """Create words file"""
     global words
-    temp = dict()
-    words["len"] = dict()
-    words["let"] = dict()
-    words["pos"] = dict()
-    words["num_ranges"] = dict()
-    temp["len_egiost"] = dict()
-    temp["len_swapped"] = dict()
-    words["num_ranges"]["common"] = dict()
-    words["num_ranges"]["egiost"] = dict()
-    words["num_ranges"]["swapped"] = dict()
-    words["num_egiost"] = dict()
-    words["num_swapped"] = dict()
+    temp = {"len_egiost": dict(), "len_swapped": dict()}
+
+    def binomial_coeff(n, k):
+        """calculate C(n, k) - the binomial coefficient
+        >>> binomial_coeff(3, 2)
+        3
+        >>> binomial_coeff(9,4)
+        126
+        >>> binomial_coeff(9,6)
+        84
+        >>> binomial_coeff(20,14)
+        38760
+        """
+        result = 1
+        for i in range(1, k + 1):
+            result = result * (n - i + 1) / i
+        return result
+
     # Load word lists
     for line in open(source_file, "r").readlines():
         word, pos = line.split("\t")
@@ -354,17 +377,15 @@ def create_words_file(source_file, words_file):
                 if p not in words["pos"].keys():
                     words["pos"][p] = set()
                 words["pos"][p].add(word)
-    # words length for egiost and swapped
+    # number of words by length
+    for i in words["len"]:
+        words["num_common"][i] = len(words["len"][i])
     for i in temp["len_egiost"]:
         words["num_egiost"][i] = len(temp["len_egiost"][i])
     for i in temp["len_swapped"]:
         words["num_swapped"][i] = len(temp["len_swapped"][i])
 
-    # words length for ranges
-    for name in names:
-        words["num_ranges"]["common"][name] = 0
-        words["num_ranges"]["egiost"][name] = 0
-        words["num_ranges"]["swapped"][name] = 0
+    # number of words per range
     for i in words["len"]:
         for name in names:
             if ranges[name][0] <= i and ranges[name][1] >= i:
@@ -373,117 +394,10 @@ def create_words_file(source_file, words_file):
                         len(temp["len_egiost"][i]))
                 words["num_ranges"]["swapped"][name] += (
                         len(temp["len_swapped"][i]))
-    words_fo = open(words_file, "wb")
-    cPickle.dump(words, words_fo, -1)
-    words_fo.close()
 
-
-def word_list_info():
-    """Display information based on loaded word list."""
-    global words
-
-    def binomial_coeff(n, k):
-        """calculate C(n, k) - the binomial coefficient
-        >>> binomial_coeff(3, 2)
-        3
-        >>> binomial_coeff(9,4)
-        126
-        >>> binomial_coeff(9,6)
-        84
-        >>> binomial_coeff(20,14)
-        38760
-        """
-        result = 1
-        for i in range(1, k + 1):
-            result = result * (n - i + 1) / i
-        return result
-
-    # header
-    print "Words loaded from: %s" % words_file
-    print "    Filters:"
-    print "        * must be at least %d letters long" % word_min
-    print "        * must be at most %d letters long" % word_max
-    print "        * must contain only letters"
-    print "        * must contain vowels (including y)"
-    print
-    print
-
-    # word information based on length
-    print ("'egoist' words consist of all unique combinations of the "
-            "following substitutions:")
-    print "    e to 3, g to 9, i to 1, o to 0, s to 5, t to 7"
-    print
-    print ("'swapped' words consist of all unique combinations in which the "
-           "first letter has\n    been replaced with every  ascii_lowercase "
-           "letter")
-    print
-    words["swapped"] = dict()
-    words["egiost"] = dict()
-    for i in words["len"]:
-        words["swapped"][i] = set()
-        words["egiost"][i] = set()
-        for word in words["len"][i]:
-            for x in ascii_lowercase:
-                words["swapped"][i].add("%s%s" % (x, word[1:]))
-            words["egiost"][i].add(word)
-            for combo in egiost_combos:
-                word_modified = word
-                for l in combo:
-                    word_modified = word_modified.replace(l, egiost_replace[l])
-                words["egiost"][i].add(word_modified)
-    common_total = dict()
-    egiost_total = dict()
-    swapped_total = dict()
-    for name in names:
-        common_total[name] = 0
-        egiost_total[name] = 0
-        swapped_total[name] = 0
-    for i in words["len"]:
-        common = len(words["len"][i])
-        egiost = len(words["egiost"][i])
-        swapped = len(words["swapped"][i])
-        for name in names:
-            if ranges[name][0] <= i and ranges[name][1] >= i:
-                common_total[name] += common
-                egiost_total[name] += egiost
-                swapped_total[name] += swapped
-        print "%d %-17s" % (i, "Character Words"),
-        print "%6d common words" % common
-        print "%26d egiost words (multiplier: %.2f)" % (egiost,
-                float(egiost) / float(common))
-        print "%26d swapped words (multiplier: %.2f)" % (swapped,
-                float(swapped) / float(common))
-        print
-    print "%-19s" % "Totals"
-    for name in names:
-        print "%26d common words, %s (%d-%d)" % (common_total[name],
-                name, ranges[name][0], ranges[name][1])
-    print
-    for name in names:
-        print "%26d egiost words, %s (%d-%d)" % (egiost_total[name],
-                name, ranges[name][0], ranges[name][1])
-    print
-    for name in names:
-        print "%26d swapped words, %s (%d-%d)" % (swapped_total[name],
-                name, ranges[name][0], ranges[name][1])
-    print
-    print
-
-    # word information based on 1st letter
-    print ("1st letter distribution (common words) and pair combinations")
-    print
+    # letter and pair averages per range
     count = dict()
     pair = dict()
-    count_total = dict()
-    pair_total = dict()
-    for name in names:
-        count_total[name] = 0
-        pair_total[name] = 0
-        header = "%s (%d-%d)" % (name.title(), ranges[name][0],
-                                 ranges[name][1])
-        print "%-20s" % header,
-    print
-    print "Words     Pairs      " * 4
     for x in ascii_lowercase:
         count[x] = dict()
         pair[x] = dict()
@@ -498,25 +412,77 @@ def word_list_info():
                         count[x][name] += 1
             for name in names:
                 pair[x][name] = binomial_coeff(count[x][name], 2)
-                count_total[name] += count[x][name]
-                pair_total[name] += pair[x][name]
-                print "%s:%6d%9d   " % (x, count[x][name], pair[x][name]),
-            print
+                words["num_ranges"]["pairs"][name] += pair[x][name]
+
+    # write data to file
+    words_fo = open(words_file, "wb")
+    cPickle.dump(words, words_fo, -1)
+    words_fo.close()
+
+
+def word_list_info():
+    """Display information based on loaded word list."""
+    # header
+    print "Words loaded from: %s" % words_file
+    print "    Filters:"
+    print "        * must be at least %d letters long" % word_min
+    print "        * must be at most %d letters long" % word_max
+    print "        * must contain only letters"
+    print "        * must contain vowels (including y)"
     print
-    print "Averages"
-    for name in names:
-        print "  %6d%9d   " % ((count_total[name] / 26),
-                (pair_total[name] / 26)),
+    print ("'common' words have been converted to all lowercase, but are "
+           "otherwise\n    unmodified.")
     print
-    print "Totals"
-    for name in names:
-        print "  %6d%9d   " % (count_total[name], pair_total[name]),
+    print ("'egoist' words consist of all unique combinations of the "
+            "following substitutions:")
+    print "    e to 3, g to 9, i to 1, o to 0, s to 5, and t to 7."
     print
+    print ("'swapped' words consist of all unique combinations in which the "
+           "first letter has\n    been replaced with every ascii_lowercase "
+           "letter.")
     print
     print
 
+    # word information based on length
+    for i in words["len"]:
+        common = words["num_common"][i]
+        egiost = words["num_egiost"][i]
+        swapped = words["num_swapped"][i]
+        print "%d %-17s" % (i, "Character Words"),
+        print "%8d common words" % common
+        print "%28d egiost words (multiplier: %.2f)" % (egiost,
+                float(egiost) / float(common))
+        print "%28d swapped words (multiplier: %.2f)" % (swapped,
+                float(swapped) / float(common))
+        print
+    print
+
+    # word information based on ranges
+    for name in names:
+        header = "%s (%d-%d) Words" % (name.title(), ranges[name][0],
+                                 ranges[name][1])
+        print "%-19s" % header,
+        # common words
+        print "%8d %s" % (words["num_ranges"]["common"][name],
+                          "common words")
+        # avg words per letter
+        print "%40d %s" % ((words["num_ranges"]["common"][name] / 26),
+                           "average words per letter")
+        # avg pairs per letter
+        print "%40d %s" % ((words["num_ranges"]["pairs"][name] / 26),
+                           "average pairs per letter")
+        # pairs (total 2 word combinations)
+        print "%40d %s" % (words["num_ranges"]["pairs"][name],
+                           "pairs (binomial coefficient, choose 2)")
+        print "%28d egiost words" % (
+                words["num_ranges"]["egiost"][name])
+        print "%28d swapped words" % (
+                words["num_ranges"]["swapped"][name])
+        print
+    print
+
     # word information based on part of speach
-    print "Parts of speech (common words, %d-%d)" % (word_min, word_max)
+    print "Parts of speech (long common words)"
     print "Key     Part of Speach          Words       Examples"
     for pos in words["pos"]:
         count = len(words["pos"][pos])
