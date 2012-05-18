@@ -107,10 +107,10 @@ passlove is licensed under the `BSD 2-Clause License <http://www.opensource.org/
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
 
-Part of Speach Database - Moby database
+Part of Speech Database - Moby database
 ---------------------------------------
 
-The Moby database was explicitly pleased in the public domain: ::
+The Moby database was explicitly placed in the public domain: ::
 
     The Moby lexicon project is complete and has been place into the public
     domain. Use, sell, rework, excerpt and use in any way on any platform.
@@ -129,7 +129,7 @@ The Moby database was explicitly pleased in the public domain: ::
     grady@northcoast.com
 
 
-Part of Speach Database - WordNet database
+Part of Speech Database - WordNet database
 ------------------------------------------
 
 The WordNet database is under the following Copyright: ::
