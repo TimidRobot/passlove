@@ -61,8 +61,24 @@ for x in xrange(1, len(egiost_replace.keys())):
     for combination in itertools.combinations(egiost_replace.keys(), x):
         egiost_combos.add(combination)
 gen = dict()
+strength = {3: 80.0, 2: 72.0, 1: 63.0, 0: 28.0}
+# NIST Special Publication 800-63 Version 1.0.2
+strength["nis"] = strength[3]   # nist
+# Good Strength
+strength["goo"] = strength[2]   # good
+strength["hig"] = strength[2]   # high
+strength["str"] = strength[2]   # strong
+# Moderate Strength
+strength["med"] = strength[1]   # medium
+strength["mod"] = strength[1]   # moderate
+# Weak Strength
+strength["low"] = strength[0]   # low
+strength["wea"] = strength[0]   # weak
 # Separators -  do no require shift key, considered injection-safe
 sep_list = [",", ".", "/", "]", "-", "=", " "]
+separator = dict()
+separator["count"] = len(sep_list)
+separator["entropy"] = math.log(separator["count"], 2)
 # random.SystemRandom - "Class that uses the os.urandom() function for
 #   generating random numbers from sources provided by the operating
 #   system. Not available on all systems. Does not rely on software state and
@@ -73,100 +89,82 @@ sep_list = [",", ".", "/", "]", "-", "=", " "]
 srand = random.SystemRandom()
 
 
-def gen_characters(level, explain=False):
+def gen_characters(min_entropy, explain=False):
     """Generate passwords containing a sequence of symbols. The symbols consist
     of "readable" characters: digits (excluding 0 and 1), ASCII letters
     (excluding I, O, i, and l), and punctuation (excluding double quotation
     ["], single quotation ['], and backtick [`])."""
     parts = list()
+    symbol = dict()
     symbols = '%s%s%s' % (digits, ascii_letters, punctuation)
     symbols = symbols.translate(None, "IOil01\"'`")
-    if level == 0:
-        length = 5
-    elif level == 1:
-        length = 10
-    else:
-        length = 12
+    symbol["count"] = len(symbols)
+    symbol["bits"] = math.log(symbol["count"], 2)
+    symbol["entropy"] = min_entropy
+    symbol["length"] = int(math.ceil(symbol["entropy"] / symbol["bits"]))
     if explain:
         # explain entropy
-        symbol_count = len(symbols)
-        symbol_length = length
-        explain_entropy(symbol_count, symbol_length, False)
+        explain_entropy(min_entropy, symbol, False)
         password = None
     else:
         # generate password
-        for x in xrange(0, length):
+        for x in xrange(0, symbol["length"]):
             parts.append(srand.choice(symbols))
         password = "".join(parts)
     return password
 gen["characters"] = gen_characters
 
 
-def gen_groups_lownum(level, explain=False):
+def gen_groups_lownum(min_entropy, explain=False):
     """Generates passwords containing groups of symbols demarcated by a
     random separator. The symbols consist of "readable" characters: digits
     (excluding 0 and 1) and lowercase ASCII letters (excluding i and l)."""
     symbols = "%s%s" % (ascii_lowercase, digits)
     symbols = symbols.translate(None, "IOil01\"'`")
-    if level == 0:
-        groups = [3, 3]
-    elif level == 1:
-        groups = [5, 4, 4]
-    else:
-        groups = [5, 5, 4]
     if explain:
         # explain entropy
-        grouped_symbols(symbols, groups, True)
+        grouped_symbols(min_entropy, symbols, True)
         password = None
     else:
         # generate password
-        password = grouped_symbols(symbols, groups)
+        password = grouped_symbols(min_entropy, symbols)
     return password
 gen["groups_lownum"] = gen_groups_lownum
 
 
-def gen_groups_lower(level, explain=False):
+def gen_groups_lower(min_entropy, explain=False):
     """Generates passwords containing groups of symbols demarcated by a
     random separator. The symbols consist of "readable" lowercase ASCII letters
     (excluding i and l)."""
     symbols = ascii_lowercase
     symbols = symbols.translate(None, "IOil01\"'`")
-    if level == 0:
-        groups = [3, 3]
-    elif level == 1:
-        groups = [5, 5, 4]
-    else:
-        groups = [6, 5, 5]
     if explain:
         # explain entropy
-        grouped_symbols(symbols, groups, True)
+        grouped_symbols(min_entropy, symbols, True)
         password = None
     else:
         # generate password
-        password = grouped_symbols(symbols, groups)
+        password = grouped_symbols(min_entropy, symbols)
     return password
 gen["groups_lower"] = gen_groups_lower
 
 
-def gen_pairs_allit(level, explain=False):
+def gen_pairs_allit(min_entropy, explain=False):
     """Generates passwords containing short alliterative word pairs in which
     the words within the pair are demarcated by a random separator."""
     pairs = list()
     sep = srand.choice(sep_list)
     length = "long"
-    r1, r2 = ranges[length]
-    if level == 0:
-        pair_count = 2
-    else:
-        pair_count = 3
+    word_type = "pairs"
+    # symbols already consist of pairs--there is no need to ensure even length
+    r1, r2, symbol = word_symbol_info(min_entropy, word_type, length)
     if explain:
         # explain entropy
-        symbol_count = words["num_ranges"]["pairs"][length]
-        symbol_length = pair_count
-        explain_entropy(symbol_count, symbol_length)
+        explain_entropy(min_entropy, symbol)
         password = None
     else:
         # generate password
+        pair_count = symbol["length"]
         for x in xrange(0, pair_count):
             word1 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
             word2 = srand.sample(words["let"][word1[0]], 1)[0]
@@ -178,26 +176,22 @@ def gen_pairs_allit(level, explain=False):
 gen["pairs_allit"] = gen_pairs_allit
 
 
-def gen_pairs_swap(level, explain=False):
+def gen_pairs_swap(min_entropy, explain=False):
     """Generate passwords consisting of medium length word pairs in which the
     1st letter has been swapped and the words within the pair are demarcated
     by a random separator."""
     pairs = list()
     sep = srand.choice(sep_list)
     length = "medium"
-    r1, r2 = ranges[length]
-    if level == 0:
-        pair_count = 1
-    else:
-        pair_count = 2
+    word_type = "swapped"
+    r1, r2, symbol = word_symbol_info(min_entropy, word_type, length, True)
     if explain:
         # explain entropy
-        symbol_count = words["num_ranges"]["swapped"][length]
-        symbol_length = pair_count * 2
-        explain_entropy(symbol_count, symbol_length)
+        explain_entropy(min_entropy, symbol)
         password = None
     else:
         # generate password
+        pair_count = symbol["length"] / 2
         for x in xrange(0, pair_count):
             word1 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
             word2 = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
@@ -208,27 +202,22 @@ def gen_pairs_swap(level, explain=False):
 gen["pairs_swap"] = gen_pairs_swap
 
 
-def gen_words(level, explain=False):
-    """Generate passwords consisting of words demarcated by a random
+def gen_words(min_entropy, explain=False):
+    """Generate passwords consisting of long words demarcated by a random
     separator."""
     parts = list()
-    sep = srand.choice(sep_list)
+    symbol = dict()
     length = "long"
-    r1, r2 = ranges[length]
-    if level == 0:
-        symbol_length = 2
-    elif level == 1:
-        symbol_length = 5
-    else:
-        symbol_length = 5
+    word_type = "common"
+    sep = srand.choice(sep_list)
+    r1, r2, symbol = word_symbol_info(min_entropy, word_type, length)
     if explain:
         # explain entropy
-        symbol_count = words["num_ranges"]["common"][length]
-        explain_entropy(symbol_count, symbol_length)
+        explain_entropy(min_entropy, symbol)
         password = None
     else:
         # generate password
-        for x in xrange(0, symbol_length):
+        for x in xrange(0, symbol["length"]):
             parts.append(
                     srand.sample(words["len"][srand.randint(r1, r2)], 1)[0])
         password = sep.join(parts)
@@ -236,28 +225,23 @@ def gen_words(level, explain=False):
 gen["words"] = gen_words
 
 
-def gen_words_egiost(level, explain=False):
-    """Generate passwords consisting of short 'egiost' words demarcated by a
-    random separator. 'egoist' words consist of all unique combinations of the
-    following substitutions: e to 3, g to 9, i to 1, o to 0, s to 5, t to 7"""
+def gen_words_egiost(min_entropy, explain=False):
+    """Generate passwords consisting of medium length 'egiost' words demarcated
+    by a random separator. 'egoist' words consist of all unique combinations of
+    the following substitutions: e to 3, g to 9, i to 1, o to 0, s to 5, t to 7
+    """
     parts = list()
-    sep = srand.choice(sep_list)
     length = "medium"
-    r1, r2 = ranges[length]
-    if level == 0:
-        symbol_length = 2
-    elif level == 1:
-        symbol_length = 4
-    else:
-        symbol_length = 5
+    word_type = "egiost"
+    sep = srand.choice(sep_list)
+    r1, r2, symbol = word_symbol_info(min_entropy, word_type, length)
     if explain:
         # explain entropy
-        symbol_count = words["num_ranges"]["egiost"][length]
-        explain_entropy(symbol_count, symbol_length)
+        explain_entropy(min_entropy, symbol)
         password = None
     else:
         # generate password
-        for x in xrange(0, symbol_length):
+        for x in xrange(0, symbol["length"]):
             word = srand.sample(words["len"][srand.randint(r1, r2)], 1)[0]
             for l in srand.sample(egiost_combos, 1)[0]:
                 word = word.replace(l, egiost_replace[l])
@@ -267,20 +251,38 @@ def gen_words_egiost(level, explain=False):
 gen["words_egiost"] = gen_words_egiost
 
 
-def grouped_symbols(symbols, groups, explain=False):
+def grouped_symbols(min_entropy, symbols, explain=False):
     """Generates passwords split into groups demarcated by a random
     separator."""
-    sep = srand.choice(sep_list)
+    groups = list()
     parts = list()
+    symbol = dict()
+    sep = srand.choice(sep_list)
+    # determine symbol entropy information
+    symbol["count"] = len(symbols)
+    symbol["bits"] = math.log(symbol["count"], 2)
+    symbol["entropy"] = min_entropy - separator["entropy"]
+    symbol["length"] = int(math.ceil(symbol["entropy"] / symbol["bits"]))
+    # determine optimal number of groups
+    if symbol["length"] < 8:
+        group_count = 2
+    elif symbol["length"] <= 14:
+        group_count = 3
+    else:
+        group_count = symbol["length"] / 5
+    group_remain = symbol["length"] % group_count
+    # determine symbol count in each group
+    for x in xrange(0, group_count):
+        group_length = symbol["length"] / group_count
+        if group_remain > 0:
+            group_length += 1
+            group_remain -= 1
+        groups.append(group_length)
     srand.shuffle(groups)
+
     if explain:
         # explain entropy
-        symbol_count = len(symbols)
-        symbol_length = 0
-        for i in groups:
-            symbol_length = symbol_length + i
-        explain_entropy(symbol_count, symbol_length)
-        return
+        explain_entropy(min_entropy, symbol)
         password = None
     else:
         # generate password
@@ -293,22 +295,38 @@ def grouped_symbols(symbols, groups, explain=False):
     return password
 
 
-def explain_entropy(symbol_count, symbol_length, separator=True):
-    symbol_bits = math.log(symbol_count, 2)
-    symbol_entropy = (symbol_bits * float(symbol_length))
-    if separator:
-        sep_count = len(sep_list)
-        sep_entropy = math.log(sep_count, 2)
-        password_entropy = symbol_entropy + sep_entropy
+def word_symbol_info(min_entropy, word_type, length, pairs=False):
+    """Determine symbol information: count, bits of entropy, minimum entropy
+    from symbols, number of symbols required to meet minimum symbol entropy,
+    and word length range."""
+    symbol = dict()
+    symbol["count"] = words["num_ranges"][word_type][length]
+    symbol["bits"] = math.log(symbol["count"], 2)
+    symbol["entropy"] = min_entropy - separator["entropy"]
+    symbol["length"] = int(math.ceil(symbol["entropy"] / symbol["bits"]))
+    # round up to even number if we're dealing with pairs
+    if pairs and symbol["length"] % 2 != 0:
+        symbol["length"] += 1
+    # word length range
+    r1, r2 = ranges[length]
+    return r1, r2, symbol
+
+
+def explain_entropy(min_entropy, symbol, with_sep=True):
+    symbol["entropy"] = (symbol["bits"] * float(symbol["length"]))
+    if with_sep:
+        password_entropy = symbol["entropy"] + separator["entropy"]
     else:
-        password_entropy = symbol_entropy
+        password_entropy = symbol["entropy"]
     print ("    Symbol entropy: %9.2f bits (%d * %.2f bits of entropy "
-           "from %d symbols)") % (symbol_entropy, symbol_length,
-                                   symbol_bits, symbol_count)
-    if separator:
+           "from %d symbols)") % (symbol["entropy"], symbol["length"],
+                                   symbol["bits"], symbol["count"])
+    if with_sep:
         print ("    Separator entropy: %6.2f bits (1 * %.2f bits of entropy "
-               "from %d symbols)") % (sep_entropy, sep_entropy, sep_count)
-    print "    Password entropy: %7.2f bits" % password_entropy
+               "from %d symbols)") % (separator["entropy"],
+                                      separator["entropy"], separator["count"])
+    print "    Password entropy: %7.2f bits (%.2f bits requested)" % (
+            password_entropy, min_entropy)
 
 
 def load_words_file(words_file):
@@ -504,23 +522,24 @@ def word_list_info():
 def parser_setup():
     """Instantiate, configure, and return an OptionParser instance."""
     p = optparse.OptionParser(usage=__doc__)
+    p.add_option("-f", "--formula", default="groups_lower",
+            help=('Password formula to use. Use "help" for a description of '
+                  'each formula. Default formula: groups_lower.'))
+    p.add_option("-e", "--entropy", dest="min_entropy",
+                 default=strength[2],
+                 help=("Minimum bits of entropy (int) or one of: Good (%s), "
+                       "Moderate (%s), or Weak (%s)") % (strength[2],
+                            strength[1], strength[0]))
     p.add_option("-n", "--number", type="int", default=1,
                  help="number of passwords to generate")
     p.add_option("--create-words-file", dest="source_file",
                  help="Create pickled word list from specified file")
     p.add_option("-w", "--word-list-info", action="store_true",
                  help="display information about word list")
-    p.add_option("-l", "--level", type="int", default=2,
-                 help="security level: 2 (good), 1 (moderate), or 0 (weak)")
-    p.add_option("-f", "--formula", default="groups_lower",
-                 help="choose from four columns of passwords")
-    p.epilog = ('Security Levels: "Good" passwords contain a minimum of 72 '
-                'bits of entropy. Good passwords can withstand an organized '
-                'group attack. "Moderate" passwords contain a minimum of '
-                '63 bits of entropy. Moderate passwords can withstand a '
-                'dedicated attacker. "Weak" passwords contain a minimum of 28 '
-                'bits of entropy. Weak passwords are only as secure as the '
-                'system that stores them.')
+    p.epilog = ('"Good" passwords can withstand an organized group attack. '
+                '"Moderate" passwords can withstand a dedicated attacker. '
+                '"Weak" passwords are only as secure as the system that '
+                'stores them.')
     return p
 
 
@@ -529,7 +548,16 @@ def main(argv):
     p = parser_setup()
     opts, args = p.parse_args(argv)
     formula = opts.formula.lower()
-    level = opts.level
+    try:
+        min_entropy = float(opts.min_entropy)
+    except:
+        min_entropy = str(opts.min_entropy)
+        min_entropy = min_entropy.lower()[0:3]
+        if min_entropy in strength:
+            min_entropy = float(strength[min_entropy])
+        else:
+            p.error('invalid argument for --entropy: "%s"' %
+                    str(opts.min_entropy))
 
     if opts.source_file:
         create_words_file(opts.source_file, words_file)
@@ -540,12 +568,12 @@ def main(argv):
         load_words_file(words_file)
         if formula in gen:
             for x in xrange(0, opts.number):
-                print gen[formula](level)
+                print gen[formula](min_entropy)
         elif formula == "all":
             passwords = list()
             for method in gen.iterkeys():
                 for x in xrange(0, opts.number):
-                    passwords.append(gen[method](level))
+                    passwords.append(gen[method](min_entropy))
             random.shuffle(passwords)
             for password in passwords:
                 print password
@@ -554,11 +582,11 @@ def main(argv):
                 print method
                 print "    %s" % gen[method].__doc__
                 print
-                gen[method](level, True)
+                gen[method](min_entropy, True)
                 print
-                print "    %s  %s" % ("Examples:", gen[method](level))
-                print "%s%s" % (" " * 15, gen[method](level))
-                print "%s%s" % (" " * 15, gen[method](level))
+                print "    %s  %s" % ("Examples:", gen[method](min_entropy))
+                print "%s%s" % (" " * 15, gen[method](min_entropy))
+                print "%s%s" % (" " * 15, gen[method](min_entropy))
                 print
                 print
 
