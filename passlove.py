@@ -9,6 +9,7 @@ pseudo-random number generator (CSPRNG)."""
 import itertools
 import math
 import optparse
+from os import path
 import cPickle
 import random
 import re
@@ -20,7 +21,10 @@ import sys
 # ...
 
 # Variables
-words_file = "words.pkl"
+script_path = path.normcase(path.realpath(path.abspath(__file__)))
+script_file = path.basename(script_path)
+script_dir = path.dirname(script_path)
+words_file = path.join(script_dir, "words.pkl")
 word_min = 2
 word_max = 6
 names = ("short", "medium", "long")
@@ -75,8 +79,8 @@ def gen_characters(level, explain=False):
     (excluding I, O, i, and l), and punctuation (excluding double quotation
     ["], single quotation ['], and backtick [`])."""
     parts = list()
-    readable = '%s%s%s' % (digits, ascii_letters, punctuation)
-    readable = readable.translate(None, "IOil01\"'`")
+    symbols = '%s%s%s' % (digits, ascii_letters, punctuation)
+    symbols = symbols.translate(None, "IOil01\"'`")
     if level == 0:
         length = 5
     elif level == 1:
@@ -85,14 +89,14 @@ def gen_characters(level, explain=False):
         length = 12
     if explain:
         # explain entropy
-        symbol_count = len(readable)
+        symbol_count = len(symbols)
         symbol_length = length
         explain_entropy(symbol_count, symbol_length, False)
         password = None
     else:
         # generate password
         for x in xrange(0, length):
-            parts.append(srand.choice(readable))
+            parts.append(srand.choice(symbols))
         password = "".join(parts)
     return password
 gen["characters"] = gen_characters
@@ -100,13 +104,14 @@ gen["characters"] = gen_characters
 
 def gen_groups_lownum(level, explain=False):
     """Generates passwords containing groups of symbols demarcated by a
-    random separator. The symbols consist of digits and lowercase ASCII
-    letters."""
+    random separator. The symbols consist of "readable" characters: digits
+    (excluding 0 and 1) and lowercase ASCII letters (excluding i and l)."""
     symbols = "%s%s" % (ascii_lowercase, digits)
+    symbols = symbols.translate(None, "IOil01\"'`")
     if level == 0:
-        groups = [2, 3]
+        groups = [3, 3]
     elif level == 1:
-        groups = [4, 4, 4]
+        groups = [5, 4, 4]
     else:
         groups = [5, 5, 4]
     if explain:
@@ -122,14 +127,16 @@ gen["groups_lownum"] = gen_groups_lownum
 
 def gen_groups_lower(level, explain=False):
     """Generates passwords containing groups of symbols demarcated by a
-    random separator. The symbols consist of lowercase ASCI letters."""
-    symbols = "%s" % (ascii_lowercase)
+    random separator. The symbols consist of "readable" lowercase ASCII letters
+    (excluding i and l)."""
+    symbols = ascii_lowercase
+    symbols = symbols.translate(None, "IOil01\"'`")
     if level == 0:
         groups = [3, 3]
     elif level == 1:
-        groups = [5, 4, 4]
+        groups = [5, 5, 4]
     else:
-        groups = [5, 5, 5]
+        groups = [6, 5, 5]
     if explain:
         # explain entropy
         grouped_symbols(symbols, groups, True)
