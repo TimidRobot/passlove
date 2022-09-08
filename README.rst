@@ -3,7 +3,7 @@ Archived / Unsupported
 
 This project has been archived and is no longer supported.
 
-A better project: `dropbox/zxcvbn <https://github.com/dropbox/zxcvbn>`_: Low-Budget Password Strength Estimation (especially the `demo <https://lowe.github.io/tryzxcvbn/>`_!)
+A better project: `dropbox/zxcvbn <https://github.com/dropbox/zxcvbn>`_: Low-Budget Password Strength Estimation (check out the `demo <https://lowe.github.io/tryzxcvbn/>`_!)
 
 
 Word List
